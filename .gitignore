@@ -1,1 +1,23 @@
+# Módulos y directorios generados por Node.js
 node_modules/
+dist/
+coverage/
+
+# Archivos de dependencias específicos del desarrollador
+package-lock.json
+yarn.lock
+
+# Archivos de entorno
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# Logs y archivos temporales
+*.log
+npm-debug.log*
+
+# Configuraciones específicas del editor
+.vscode/
+.idea/
