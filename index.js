@@ -8,8 +8,13 @@ const app = express()
 app.use(express.json());
 
 // Enrutado
+// Usuarios
 const userRouter = require('./users/users.controller')
 app.use("/api", userRouter)
+
+// Restaurantes
+const restaurantesRouter = require('./restaurantes/restaurantes.controller')
+app.use("/api", restaurantesRouter)
 
 // Conexión BD
 const URL = process.env.MONGO_DB
