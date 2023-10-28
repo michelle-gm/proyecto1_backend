@@ -8,7 +8,10 @@ restaurantesRouter.get("/restaurante/readID/:_id", async (req, res) => {
 
   if (restauranteID) {
     // Si se proporciona un ID, buscar por ID
-    const restaurante = await Restaurante.findById(restauranteID);
+    const restaurante = await Restaurante.findOne({
+      _id: restauranteID,
+      isDeleted: false,
+    });
     res.json(restaurante);
   } else {
     res.status(400).json({ message: "ID inválida" });
@@ -18,16 +21,11 @@ restaurantesRouter.get("/restaurante/readID/:_id", async (req, res) => {
 // Leer un restaurante por categoria o similitud
 restaurantesRouter.get("/restaurante/search", async (req, res) => {
   const { categoria, name } = req.query;
-  const query = {};
-
-  if (categoria) {
-    query.categoria = categoria;
-  }
-
-  if (name) {
-    // Usamos una expresión regular para buscar nombres que contengan el término
-    query.name = new RegExp(name, "i");
-  }
+  const query = {
+    ...(name && { name: { $regex: name, $options: 'i' } }),
+    ...(categoria && { categoria: categoria }),
+    isDeleted: false,
+  };
 
   try {
     const restaurantes = await Restaurante.find(query);
@@ -42,10 +40,13 @@ restaurantesRouter.get("/restaurante/search", async (req, res) => {
 // Crear un Restaurante
 restaurantesRouter.post("/restaurante/create", async (req, res) => {
   try {
-    const { name, dir, categoria, isDeleted } =
-      req.body;
+    const { name, dir, categoria, inventario, isDeleted } = req.body;
     let restaurante = new Restaurante({
-      name, dir, categoria, isDeleted
+      name,
+      dir,
+      categoria,
+      inventario,
+      isDeleted,
     });
     const result = await restaurante.save();
     return res.status(200).send({
@@ -60,13 +61,12 @@ restaurantesRouter.post("/restaurante/create", async (req, res) => {
 // Actualizar un restaurante por ID
 restaurantesRouter.put("/restaurante/update", async (req, res) => {
   const restauranteId = req.query._id;
-  const { name, dir, categoria, isDeleted} =
-    req.body;
+  const { name, dir, categoria, inventario, isDeleted } = req.body;
 
   try {
     const updatedRestaurante = await Restaurante.findByIdAndUpdate(
-        restauranteId,
-      { name, dir, categoria, isDeleted },
+      restauranteId,
+      { name, dir, categoria, inventario, isDeleted },
       {
         new: true,
       }
@@ -81,7 +81,7 @@ restaurantesRouter.put("/restaurante/update", async (req, res) => {
   }
 });
 
-// Inhabilitar un restaurante usuario por ID
+// Inhabilitar un restaurante por ID
 restaurantesRouter.delete("/restaurante/delete", async (req, res) => {
   await Restaurante.findByIdAndUpdate(
     req.query._id,

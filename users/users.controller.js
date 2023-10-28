@@ -9,11 +9,14 @@ userRouter.get("/user/read", async (req, res) => {
 
   if(_id){
     // Si se proporciona un ID, buscar por ID
-    const user = await User.findById(_id)
+    const user = await User.findOne({
+      _id: _id,
+      isDeleted: false,
+    });
     res.json(user)
   }else if(correo && pass){
     // Si se proporcionan credenciales (correo y contraseña), buscar por ellas
-    const user = await User.findOne({ correo, pass })
+    const user = await User.findOne({ correo: correo, pass: pass, isDeleted: false, })
     res.json(user)
   }else {
     res.status(400).json({ message: 'Debes proporcionar un ID o credenciales válidas.' });

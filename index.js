@@ -16,6 +16,14 @@ app.use("/api", userRouter)
 const restaurantesRouter = require('./restaurantes/restaurantes.controller')
 app.use("/api", restaurantesRouter)
 
+// Producto
+const productoRouter = require('./productos/productos.controller')
+app.use("/api", productoRouter)
+
+// Pedido
+const pedidoRouter = require('./pedido/pedido.controller')
+app.use("/api", pedidoRouter)
+
 // Conexión BD
 const URL = process.env.MONGO_DB
 
